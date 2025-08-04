@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres
+    container_name: pg_recipes
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - /root/task/data/pgdata:/var/lib/postgresql/data
+      - /root/task/init_database.sql:/docker-entrypoint-initdb.d/init_database.sql
+    environment:
+      - POSTGRES_USER=utkrusht
+      - POSTGRES_PASSWORD=utkrushtpass
+      - POSTGRES_DB=recipes
+    networks:
+      - task-network
+  fastapi:
+    build: /root/task
+    container_name: fastapi_recipes
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    volumes:
+      - /root/task:/root/task
+    networks:
+      - task-network
+networks:
+  task-network:
+    driver: bridge
